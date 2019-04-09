@@ -1,61 +1,41 @@
 import java.util.Scanner;
 
-public class p140 {
-	
+public class reto{
+ 
+    public static void main(String[] args){
 
-	public static void main(String[] args){
+ 
+        Scanner sc = new Scanner(System.in);
 
-		Scanner s = new Scanner(System.in);
+        String total;
+        int suma;
+        int digito;
 
-		int numero;
-		int aux;
-		int digito = 0;
-		int suma = 0;
-		int div;
+        do {
 
-		do {
+            total = sc.nextLine();
+            suma = 0;
 
-			numero = s.nextInt();
-			aux = numero;
-			suma = 0;
-			div = 1000000000;
+            if(("" + total.charAt(0)).equals("-")){
+                break;
+            }
 
-			if (numero > 0 && numero < 1000000000) {
-				
-				do {
+            for(int i=0; i<total.length(); i++){
 
-					do {
+                digito = Integer.parseInt("" + total.charAt(i));
+                suma += digito;
 
-						digito = aux / div;
+                if(i == total.length()-1){
+                    System.out.print(digito + " = " + suma);
+                } else {
+                    System.out.print(digito + " + ");
+                }
+         
+            }
 
-						if(digito == 0){
-							div /= 10;
-						} else {
-							aux %= div;
-						}
+            System.out.println();
 
-					} while(digito == 0);
-					
-					suma += digito;
-
-					System.out.print(digito);
-					
-					if(aux > 0){
-						System.out.print(" + ");
-					}
-
-				} while(aux > 0);
-
-				System.out.print(" = " + suma);
-				System.out.println();
-				
-			}
-
-		} while(numero > 0);
-
-
-	}
-
-
-
+        } while(0 <= Integer.parseInt(total));
+    }
+ 
 }

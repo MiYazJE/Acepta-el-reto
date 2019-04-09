@@ -20,7 +20,7 @@ public class p368{
 				System.out.println(coccion);
 			} else if(huevos != 0 && capacidad != 0) {
 				
-				do{
+				do {
 
 					if(huevos > capacidad){
 						huevos -= capacidad;
