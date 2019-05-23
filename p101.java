@@ -1,188 +1,162 @@
 import java.util.Scanner;
-import java.util.Arrays;
 
 public class p101 {
 
-	public static void main(String[] args) {
+    public static int calcularEsquinas(int[][] m) {
+        int sumaEsquinas = 0;
+        sumaEsquinas += m[0][0];
+        sumaEsquinas += m[0][m.length-1];
+        sumaEsquinas += m[m.length-1][0];
+        sumaEsquinas += m[m.length-1][m.length-1];
+        return sumaEsquinas;
+    }
 
- 		Scanner s = new Scanner(System.in);
+    public static int calcularCm(int[][] m) {
+        int cm = 0;
+        for (int i = 0; i < m.length; i++) {
+            cm += m[0][i];
+        }
+        return cm;
+    }
 
- 		int[][] matriz;
- 		int[] vector;
-		int n;
-		int nFilas;
-		int nColumnas;
-		int nDiagonal;
-		int nDiagonalInv;
-		int aux;
-		boolean diabolico;
-		boolean esoterico;
-		boolean nNatural;
-		int CM;
-		int CM2;
-		int esquinas;
-		int centro;
-		int centroLados;
+    public static int calcularFila(int[][] m, int n) {
+        int sumaFila = 0;
+        for (int i = 0; i < m.length; i++) {
+            sumaFila += m[n][i];
+        }
+        return sumaFila;
+    }
 
+    public static boolean calcularDiagonales(int[][] m, int cm) {
+        int diagonalPrincipal  = 0;
+        int diagonalSecundaria = 0;
+        for (int i = m.length-1, j = 0; i >= 0; i--, j++) {
+            diagonalPrincipal  += m[i][j];
+            diagonalSecundaria += m[j][j];
+        }
+        return (diagonalPrincipal == cm &&
+                diagonalSecundaria == cm);
+    }
 
- 		n = s.nextInt();
+    public static int calcularColumna(int[][] m, int n) {
+        int sumaColumna = 0;
+        for (int i = 0; i < m.length; i++) {
+            sumaColumna += m[i][n];
+        }
+        return sumaColumna;
+    }
 
- 		while(n != 0) {
+    public static int calcularCasillasMitad(int[][] m) {
+        int mitad = 0;
+        if (m.length % 2 != 0) {
+            mitad += m[0][m.length/2]; // arriba
+            mitad += m[m.length/2][0]; // izq
+            mitad += m[m.length-1][m.length/2]; // abajo
+            mitad += m[m.length/2][m.length-1]; // der
+        }
+        else {
+            mitad += m[0][m.length/2]; // arriba
+            mitad += m[0][(m.length/2)-1];
 
- 			nFilas = 0;
-			nColumnas = 0;
-			nDiagonal = 0;
-			nDiagonalInv = 0;
-			esquinas = 0;
-			centro = 0;
-			centroLados = 0;
-			esoterico = false;
-			nNatural = true;
-			diabolico = true;
-			vector = new int[n * n]; 
-			matriz = new int[n][n];
+            mitad += m[m.length/2][0]; // izq
+            mitad += m[(m.length/2)-1][0];
 
+            mitad += m[m.length-1][m.length/2]; // abajo
+            mitad += m[m.length-1][(m.length/2)-1];
 
- 			// Creación de la matriz
-			for(int i = 0; i < n; i++) {
- 				for(int j = 0; j < n; j++) {
+            mitad += m[m.length/2][m.length-1]; // der
+            mitad += m[(m.length/2)-1][m.length-1];
+        }
+        return mitad;
+    }
 
- 					matriz[i][j] = s.nextInt();
+    public static void main(String[] args) {
 
- 					if(matriz[i][j] >= 1 && matriz[i][j] <= n * n) {
- 						if(vector[matriz[i][j]-1] == 0) {
- 							vector[matriz[i][j]-1] = 1;
- 						} else {
- 							nNatural = false;
- 						}
- 					} else {
- 						nNatural = false;
- 					}
+        Scanner s = new Scanner(System.in);
 
- 				}
+        int n, cm, cm2;
+        int[][] m;
+        int[] test;
+        boolean diabolico, esoterico;
 
- 			}  
+        while (true) {
 
+            n = s.nextInt();
+            if (n == 0) break;
 
- 						// COMPROBACION NUMERO DIABOLICO
+            m = new int[n][n];
+            test   = new int[n*n];
 
- 			// Comprobacion suma diagonal
-			for(int i = 0; i < n; i++) {
+            diabolico = true;
+            esoterico = true;
 
- 				nDiagonal += matriz[i][i];
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    int numero = s.nextInt();
+                    m[i][j] = numero;
+                    if (numero > (n*n) || test[numero-1] == 1)
+                        esoterico = false;
+                    else if (numero <= (n*n))
+                        test[numero-1] = 1;
+                }
+            }
 
- 			}
+            cm  = calcularCm( m );
+            cm2 = (cm * 4) / n;
 
+            for (int i = 0; i < m.length; i++) {
+                if (calcularFila(m, i) != cm) {
+                    diabolico = false;
+                    break;
+                }
+                if (calcularColumna(m, i) != cm) {
+                    diabolico = false;
+                    break;
+                }
+            }
 
- 			// Comprobacion Suma diagonal invertida
-			for(int i = n-1; i >= 0; i--) {
+            if (diabolico && !calcularDiagonales(m, cm))
+                diabolico = false;
 
- 				aux = (n-1) - i;
- 				nDiagonalInv += matriz[aux][i];
+            if (diabolico && esoterico) {
+                if (calcularEsquinas(m) != cm2)
+                    diabolico = false;
 
- 			}
+                int mitad = calcularCasillasMitad( m );
+                if (n % 2 != 0 && mitad != cm2)
+                    esoterico = false;
+                else if (n % 2 == 0) {
+                    if (mitad != (cm2 * 2))
+                        esoterico = false;
+                }
 
+                if (n % 2 != 0 && esoterico) {
+                    if (m[m.length/2][m.length/2] * 4 != cm2)
+                        esoterico = false;
+                }
+                else if (esoterico) {
+                    int centro = 0;
+                    centro += m[m.length/2][m.length/2];
+                    centro += m[m.length/2][(m.length/2)-1];
+                    centro += m[(m.length/2)-1][m.length/2];
+                    centro += m[(m.length/2)-1][(m.length/2)-1];
+                    if (centro != cm2)
+                        esoterico = false;
+                }
+            }
 
- 			// Comprobacion suma filas y columnas
-			for(int i = 0; i < n; i++) {
+            if (diabolico && esoterico) {
+                System.out.println("ESOTERICO");
+            }
+            else if (diabolico) {
+                System.out.println("DIABOLICO");
+            }
+            else {
+                System.out.println("NO");
+            }
 
- 				nFilas = 0;
-				nColumnas = 0;
- 				
-				for(int j = 0; j < n; j++) {
+        }
 
- 					nFilas += matriz[i][j];	
-					nColumnas += matriz[j][i];
+    }
 
- 				}
-
- 				if(nFilas == nColumnas && nColumnas == nDiagonal && nDiagonal == nDiagonalInv) {
-
- 					diabolico = true;
-
- 				} else {
-
- 					diabolico = false;
-					break;
-
- 				}
-
- 			} 
-
-
-
-
- 			if(diabolico && nNatural) {
-
- 				CM = nFilas;
- 				CM2 = (4 * CM) / n; 
-
- 				esquinas += matriz[0][0];
-				esquinas += matriz[0][n-1];
-				esquinas += matriz[n-1][0];
-				esquinas += matriz[n-1][n-1];
-
- 				if(esquinas == CM2) {
-					
-					if(n %2 != 0) {
- 						aux = n / 2;
-
- 						centro = 4 * matriz[aux][aux];
-
- 						centroLados += matriz[0][aux];
-						centroLados += matriz[aux][0];
-						centroLados += matriz[aux][n-1];
-						centroLados += matriz[(n-1)][aux];
-
- 						if(centro == CM2 && centroLados == CM2) {
-							esoterico = true;
-						}
-
- 					} else if(n %2 == 0) {
-
- 						aux = n / 2;
-
- 						centro += matriz[aux-1][aux-1];
-						centro += matriz[aux-1][aux];
-						centro += matriz[aux][aux-1];
-						centro += matriz[aux][aux];
-
- 						centroLados += matriz[0][aux-1];
-						centroLados += matriz[0][aux];
-						centroLados += matriz[aux-1][0];
-						centroLados += matriz[aux][0];
-						centroLados += matriz[aux-1][n-1];
-						centroLados += matriz[aux][n-1];
-						centroLados += matriz[n-1][aux-1];
-						centroLados += matriz[n-1][aux];
-
- 						if(centro == CM2 && centroLados == (2 * CM2)) {
-							esoterico = true;
-						}
-
- 					}
-
- 				}
-
- 			}
-
- 			if(diabolico && esoterico) {
-				System.out.println("ESOTERICO");
-			}
-			else if(diabolico) {
-				System.out.println("DIABOLICO");
-			}
-			else {
-				System.out.println("NO");
-			}
-
-
- 			n = s.nextInt();
-
- 		}
-
- 		s.close();
-
-	}
-
-} 
+}
