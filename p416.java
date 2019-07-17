@@ -1,64 +1,37 @@
 import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeSet;
+
+/**
+ * @author Rubén Saiz
+ */
 
 public class p416 {
 
-	public static boolean comprobarFecha(String[] diaMes) {
+    public static void main(String[] args) {
 
-		boolean cumpleanyos = false;
+        Scanner s = new Scanner(System.in);
 
-		for(int i = 0; i < diaMes.length; i=i+3) {
-			for(int j = 3; j < diaMes.length; j=j+3) {
+        Set<String> cumples;
+        String[] fecha;
+        int casos;
+        boolean repetido;
 
-				if(diaMes[i].equals(diaMes[j]) && diaMes[i+1].equals(diaMes[j+1]) && i != j) {
-					cumpleanyos = true;
-					return cumpleanyos;
-				}
-				
-			}
-		}
+        while (true) {
 
-		return cumpleanyos;
+            casos = s.nextInt();
+            if (casos == 0) break;
 
-	}
+            cumples = new TreeSet<>(); repetido = false;
+            for (int i = 0; i < casos; i++) {
+                fecha = s.next().split("/");
+                if (cumples.contains(fecha[0] + " " + fecha[1])) { repetido = true; s.nextLine(); break; }
+                else cumples.add( fecha[0] + " " + fecha[1] );
+            }
 
+            System.out.println( (repetido) ? "SI" : "NO" );
+        }
 
-
-	public static void main(String[] args) {
-
-		Scanner s = new Scanner(System.in);
-
-		String x = s.nextLine();
-		x = x.trim();
-		int fechasTotal = Integer.parseInt(x);
-		String fecha;
-		String[] diaMes;
-
-		while( true ) {
-
-			diaMes = new String[fechasTotal*3];
-
-			fecha  = s.nextLine();
-			fecha  = fecha.replace(" ", "/");
-			diaMes = fecha.split("/");
-
-			if(comprobarFecha(diaMes)) {
-				System.out.println("SI");				
-			} else {
-				System.out.println("NO");
-			}
-
-			x = s.nextLine();
-			x = x.trim();
-			fechasTotal = Integer.parseInt(x);
-
-			if(fechasTotal == 0) {
-				System.exit(0);	
-			}
-
-		}
-
-		
-
-	}
+    }
 
 }
