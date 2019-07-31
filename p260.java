@@ -1,52 +1,42 @@
-import java.util.*;
+import java.util.Arrays;
+import java.util.Scanner;
 
+/**
+ * @author Rubén Saiz
+ */
 
 public class p260 {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		Scanner s = new Scanner(System.in);
+        Scanner s = new Scanner(System.in);
 
-		String palabra1;
-		String palabra2;
-		char[] palabreja = new char[1000];
-		char[] palabreja2 = new char[1000];
-		int casos;
+        int casos = s.nextInt(); s.nextLine();
+        String str1, str2;
 
-		casos = s.nextInt();
-		s.nextLine();
+        for (int c = 0; c < casos; c++) {
 
-		for (int i = 0; i < casos; i++) {
+            str1 = s.nextLine().replace(" ", "").toLowerCase();
+            str2 = s.nextLine().replace(" ", "").toLowerCase();
 
-			palabra1 = s.nextLine();
-			palabra1 = palabra1.toLowerCase();
-			palabra1 = palabra1.replace(" ", "");
+            if (str1.length() != str2.length()) System.out.println("NO");
+            else {
 
-			palabra2 = s.nextLine();
-			palabra2 = palabra2.toLowerCase();
-			palabra2 = palabra2.replace(" ", "");
+                boolean anagram = true;
+                int[] table = new int[58];
 
-			palabreja = palabra1.toCharArray();
-			palabreja2 = palabra2.toCharArray();
+                for (char letra : str1.toCharArray()) table[letra - 'A']++;
 
-			Arrays.sort(palabreja);
-			Arrays.sort(palabreja2);
+                for (char letra : str2.toCharArray()) {
+                    table[letra - 'A']--;
+                    if (table[letra - 'A'] < 0) anagram = false;
+                }
 
-			if(palabreja.length == palabreja2.length) {
+                System.out.println( anagram ? "SI" : "NO" );
+            }
 
-				if(String.valueOf(palabreja).equals(String.valueOf(palabreja2))) {
-					System.out.println("SI");
-				} else {
-					System.out.println("NO");
-				}
+        }
 
-			} else {
-				System.out.println("NO");
-			}
-
-		}
-
-		s.close();
-	}
+    }
 
 }
