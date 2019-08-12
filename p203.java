@@ -44,6 +44,8 @@ public class p203 {
      */
     static void sumTrees(Tree t1, Tree t2, Tree t3) {
 
+        Tree next1, next2;
+
         // Reemplazo valores nulos por -1
         int n1 = (t1 != null && t1.left != null) ? t1.left.val : -1;
         int n2 = (t2 != null && t2.left != null) ? t2.left.val : -1;
@@ -58,7 +60,9 @@ public class p203 {
             if (n1 == -1) n1 = 0;
             if (n2 == -1) n2 = 0;
             t3.left = new Tree(n1 + n2);
-            sumTrees(t1.left, t2.left, t3.left);
+            next1 = (t1 != null && t1.left != null) ? t1.left : t1;
+            next2 = (t2 != null && t2.left != null) ? t2.left : t2;
+            sumTrees(next1, next2, t3.left);
         }
 
         // Lo mismo pero por los nodos de la derecha
@@ -72,7 +76,9 @@ public class p203 {
             if (n1 == -1) n1 = 0;
             if (n2 == -1) n2 = 0;
             t3.right = new Tree(n1 + n2);
-            sumTrees(t1.right, t2.right, t3.right);
+            next1 = (t1 != null && t1.right != null) ? t1.right : t1;
+            next2 = (t2 != null && t2.right != null) ? t2.right : t2;
+            sumTrees(next1, next2, t3.right);
         }
 
     }
@@ -87,7 +93,6 @@ public class p203 {
             System.out.print(" " + tree.right.val);
             printTree(tree.right);
         }
-
     }
 
     public static void main(String[] args) {
