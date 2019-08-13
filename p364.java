@@ -1,67 +1,37 @@
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+/**
+ * @author Rubén Saiz
+ */
 
 public class p364 {
 
-	public static void main(String[] args) {
+    static final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-		Scanner s = new Scanner(System.in);
+    public static void main(String[] args) throws IOException {
 
-		String frase;
-		String fraseEncriptada;
+        String line;
+        StringBuilder result = new StringBuilder();;
 
-		frase = s.nextLine();
+        while (true) {
 
-		while(!frase.equals("FIN")) {
+            line = br.readLine();
+            if (line.equals("FIN")) break;
 
-			fraseEncriptada = siguienteLetra(frase);
+            for (int i = 0; i < line.length(); i++) {
+                if (line.charAt(i) != ' ') {
+                    if (line.charAt(i) == 90) result.append((char)65);
+                    else result.append((char)(line.charAt(i) + 1));
+                }
+                else result.append(' ');
+            }
 
-			System.out.println(fraseEncriptada);
+            System.out.printf( "%s\n", result );
+            result.setLength(0);
+        }
 
-
-			frase = s.nextLine();
-		}
-
-
-		s.close();
-	}
-
-
-
-	public static String siguienteLetra(String frase) {
-
-		char letras[] =  {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-		int pos;
-		String encriptado = "";
-
-		for(int i=0; i<frase.length(); i++) {
-
-			pos = 0;
-
-			for(int j=0; j<letras.length; j++) {
-				
-				if(frase.charAt(i) == letras[j]){
-					pos = j;
-				}
-
-			}
-
-			if(letras[pos] == 'Z') {
-				encriptado += ("" + letras[0]);
-			}
-			else if(frase.charAt(i) == ' ') {
-				encriptado += " ";
-			} 
-			else {
-				encriptado += ("" + letras[pos+1]);
-			}
-
-
-		}
-
-		return encriptado;
-
-	}
-
-
+    }
 
 }
