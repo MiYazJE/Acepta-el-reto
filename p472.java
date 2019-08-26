@@ -1,57 +1,47 @@
+/**
+ * @author Rubén Saiz
+ */
+package p472;
+
 import java.util.Scanner;
 
 public class p472 {
 
-	public static void main(String[] args) {
+    static final Scanner s = new Scanner(System.in);
 
-		Scanner s = new Scanner(System.in);
+    public static void main(String[] args) {
 
-		int desPermitido;
-		int desnivel;
-		int tramos;
-		int altura1;
-		int altura2;
-		boolean apto; 
+        int max, n, temp;
+        int n1, n2;
+        boolean valid;
 
-		while (s.hasNext()) {
+        while (s.hasNext()) {
 
-			desPermitido = s.nextInt();
-			tramos       = s.nextInt();
+            max = s.nextInt();
+            n   = s.nextInt();
 
-			apto     = true;
-			desnivel = 0;
+            valid = true;
+            temp = 0;
 
-			altura1 = s.nextInt();
-			for (int i = 1; i < tramos; i++) {
+            n1 = s.nextInt();
+            for (int i = 1; i < n; i++) {
+                n2 = s.nextInt();
+                if (n2 > n1) {
+                    temp += Math.abs(n1 - n2);
+                }
+                else {
+                    temp = 0;
+                }
+                if (temp > max) {
+                    valid = false; s.nextLine();
+                    break;
+                }
+                n1 = n2;
+            }
 
-				altura2 = s.nextInt();
+            System.out.println( (valid) ? "APTA" : "NO APTA" );
+        }
 
-				if (altura2 > altura1) {
-					desnivel += altura2 - altura1;
-				} else {
-					desnivel = 0;
-				}
-
-				if(desnivel > desPermitido) {
-					apto = false;
-					s.nextLine();
-					break;
-				}
-
-				altura1 = altura2;
-			}
-
-			if (apto) {
-				System.out.println("APTA");
-			} else {
-				System.out.println("NO APTA");
-			}
-
-		}
-		
-
-		s.close();
-
-	}
+    }
 
 }
