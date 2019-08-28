@@ -27,14 +27,6 @@ public class p273 {
         return memo[A.length()][B.length()];
     }
 
-    static int lcsRecursion(int m, int n) {
-        if (m == 0 || n == 0) return 0;
-        int best= memo[m][n];
-        if (memo[m][n]!= 0) return best;
-        if (A.charAt(m-1) == B.charAt(n-1))  return best + 1 + lcsRecursion(m-1, n-1);
-        return Math.max(lcsRecursion(m, n-1),lcsRecursion(m-1, n));
-    }
-
     public static void main(String[] args) {
 
         final Scanner s = new Scanner(System.in);
