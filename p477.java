@@ -1,113 +1,80 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Arma {
+    int dVillano;
+    int dInocente;
+    int pos;
+    Arma(int x, int y, int j) {
+        dInocente = x;
+        dVillano  = y;
+        pos       = j;
+    }
+}
 
 public class p477 {
 
-	// public static void ShellSort(int[] data) {
-	//     int inner, outer;
-	//     int temp;
-	//     int len = data.length;
-	    
-	//     int h = 1;
-	//     while (h <= len / 3)
-	//     	h = h * 3 + 1;
-	
-	//     while (h > 0) {
-	//     	for (outer = h; outer < len; outer++) {
-	//     		temp = data[outer];
-	//     		inner = outer;
-	//         while (inner > h - 1 && data[inner - h] >= temp) { // >=(ascendente) - <(descendente)
-	//         	data[inner] = data[inner - h];
-    //     		inner -= h;
-	//         }
-	//         data[inner] = temp;
-	//     	}
-	//     	h = (h - 1) / 3;
-	//     }
-	// }
+    static Arma getArma(ArrayList<Arma> armas) {
+        Arma res = armas.get(0);
+        for (int i = 1; i < armas.size(); i++)
+            if (armas.get(i).dInocente < res.dInocente)
+                res = armas.get(i);
+        return getMax(armas, res);
+    }
 
-	public static void main(String[] args) {
+    static Arma getMax(ArrayList<Arma> armas, Arma actual) {
+        for (int i = 0; i < armas.size(); i++) {
+            Arma posible = armas.get(i);
+            if (posible.dInocente == actual.dInocente &&
+                posible.dVillano > actual.dVillano) {
+                actual = posible;
+            }
+        }
+        return actual;
+    }
 
-		Scanner s = new Scanner(System.in);
+    public static void main(String[] args) {
 
-		int vida;
-		int nArmas;
-		int[] danyoInocentes;
-		int[] danyoVillanos;
-		int[] armasUtilizadas;
-		int posVillano;
-		int menor;
-		int mayor;
-		int n;
+        final Scanner s = new Scanner(System.in);
 
-		while (s.hasNext()) {
+        int vida, numArmas;
+        ArrayList<Arma> armas = new ArrayList<>();
+        ArrayList<Integer> sucesion = new ArrayList<>();
+        boolean muerto;
 
-			vida   = s.nextInt();
-			if (vida == 0) break;
-			nArmas = s.nextInt();
+        while (true) {
 
-			danyoInocentes  = new int[nArmas];
-			danyoVillanos   = new int[nArmas];
-			armasUtilizadas = new int[nArmas];
+            vida = s.nextInt();
+            if (vida == 0) break;
 
-			for (int i = 0; i < nArmas; i++) {
-				danyoInocentes[i] = s.nextInt();
-				danyoVillanos[i]  = s.nextInt();
-			}
+            numArmas = s.nextInt();
+            for (int i = 1; i <= numArmas; i++)
+                armas.add(new Arma(s.nextInt(), s.nextInt(), i));
 
-			for (int j = 0; j < nArmas; j++) {
-				
-				posVillano  = 0;
+            muerto = false;
+            while (!armas.isEmpty() && vida > 0) {
+                Arma arma = getArma(armas);
+                vida -= arma.dVillano;
+                sucesion.add(arma.pos);
+                armas.remove(arma);
+                muerto = (vida <= 0);
+            }
 
-				menor = danyoInocentes[0];
-				mayor = danyoVillanos[0];
-				for (int i = 1; i < nArmas; i++) {
-					
-					if (danyoInocentes[i] != -1) {
-						if (danyoInocentes[i] < menor) {
-							menor = danyoInocentes[i];
-							posVillano = i;
-						} 
-						else {
-							if (danyoInocentes[i] == menor) {
-								if (danyoVillanos[i] != -1) {
-									if (danyoVillanos[i] > menor) {
-										mayor = danyoVillanos[i];
-										posVillano = i;
-									}
-								}
-							}
-						}
-					}
+            if (muerto) {
+                for (int i = 0; i < sucesion.size(); i++) {
+                    System.out.print(sucesion.get(i));
+                    if (i < sucesion.size() - 1) System.out.print(" ");
+                    else System.out.println();
+                }
+            }
+            else {
+                System.out.println("MUERTE ESCAPA");
+            }
 
-				}
+            sucesion.clear();
+            armas.clear();
+        }
 
-				vida -= danyoVillanos[posVillano];
-				danyoVillanos[posVillano]  = -1;
-				danyoInocentes[posVillano] = -1;
-				armasUtilizadas[j] = posVillano + 1;
+    }
 
-				if (vida <= 0) break;
-			}
-
-			if (vida > 0) {
-				System.out.println("MUERTE ESCAPA");
-			}
-			else {
-
-				n = armasUtilizadas.length;
-				for (int i = 0; i < n; i++) {
-					if (i+1 < n && armasUtilizadas[i+1] != 0) {
-						System.out.print(armasUtilizadas[i] + " ");
-					}	
-					else if (armasUtilizadas[i] != 0) {
-						System.out.println(armasUtilizadas[i]);
-					}
-				}
-
-			}
-
-		} // while (true)
-
-	} // main
-
-} // class
+}
