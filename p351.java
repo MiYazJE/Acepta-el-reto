@@ -5,9 +5,11 @@ import java.util.*;
  */
 
 class User implements Comparable<User> {
-    int id, time;
+    int id, time, sum;
     User(int id, int time) {
-        this.id = id; this.time = time;
+        this.id = id;
+        this.time = time;
+        this.sum = time;
     }
     @Override
     public int compareTo(User o) {
@@ -24,7 +26,6 @@ public class p351 {
 
         int id, time, casos, K;
         Queue<User> userList = new PriorityQueue<>();
-        Map<Integer, Integer> times = new HashMap<>();
 
         while (true) {
 
@@ -34,18 +35,20 @@ public class p351 {
             for (int i = 0; i < casos; i++) {
                 id = s.nextInt();
                 time = s.nextInt();
-                userList.add(new User(id, time));
-                times.put(id, time);
+                User user = new User(id, time);
+                user.sum = time;
+                userList.add( user );
             }
 
             K = s.nextInt();
             for (int i = 0; i < K; i++) {
                 User user = userList.poll();
                 System.out.println( user.id );
-                userList.add(new User(user.id, user.time + times.get(user.id)));
+                User newUser = new User(user.id, user.time + user.sum);
+                newUser.sum = user.sum;
+                userList.add( newUser );
             }
 
-            times.clear();
             userList.clear();
             System.out.println("----");
         }
