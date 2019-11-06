@@ -9,7 +9,6 @@ class User implements Comparable<User> {
     User(int id, int time) {
         this.id = id;
         this.time = time;
-        this.sum = time;
     }
     @Override
     public int compareTo(User o) {
