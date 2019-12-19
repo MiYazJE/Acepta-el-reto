@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class p545 {
+public class p535 {
 
     public static void main(String[] args) {
 
