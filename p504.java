@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.PriorityQueue;
-import java.util.Scanner;
+import java.util.*;
 
 class State implements Comparable<State> {
 
@@ -17,17 +14,17 @@ class State implements Comparable<State> {
 
     @Override
     public int compareTo(State state) {
-        if (this.weight == state.weight) return this.streets - state.streets;
         return this.weight - state.weight;
     }
 }
 
-class Node {
+class Edge {
 
-    int to;
+    int from, to;
     int weight;
 
-    public Node(int node, int weight) {
+    public Edge(int from, int node, int weight) {
+        this.from = from;
         this.to = node;
         this.weight = weight;
     }
@@ -36,29 +33,29 @@ class Node {
 
 class Graph {
 
-    HashMap<Integer, ArrayList<Node>> adyacentList;
+    HashMap<Integer, LinkedList<Edge>> adyacentList;
     int size;
 
     public Graph(int size) {
 
         this.size = size;
+        adyacentList = new HashMap<>();
 
-        this.adyacentList = new HashMap<>();
         for (int i = 1; i <= this.size; i++) {
-            this.adyacentList.put(i, new ArrayList<>());
+            adyacentList.put(i, new LinkedList<Edge>());
         }
-        
+
     }
 
     public void addPair(int A, int B, int weight) {
-        this.adyacentList.get(A).add(new Node(B, weight));
-        this.adyacentList.get(B).add(new Node(A, weight));
+        this.adyacentList.get(A).addLast(new Edge(A, B, weight));
+        this.adyacentList.get(B).addLast(new Edge(B, A, weight));
     }
 
-    public int bfs(int start, int end) {
-        boolean[] visited = new boolean[this.size + 1];
-
-        return -1;
+    public void clear(int to) {
+        for (int i = 1; i <= to; i++) {
+            this.adyacentList.get(i).clear();
+        }
     }
 
 }
@@ -69,8 +66,9 @@ public class p504 {
 
         final Scanner s = new Scanner(System.in);
 
-        Graph graph;
+        Graph graph = new Graph(20_001);
         boolean found, flag;
+        boolean[] visited;
         int N, C;
         int distance[];
         int start, end, querys, bestWeight, streets;
@@ -81,11 +79,8 @@ public class p504 {
             N = s.nextInt();
             C = s.nextInt();
 
-            graph = new Graph(N);
-
-            for (int i = 0; i < C; i++) {
+            for (int i = 0; i < C; i++)
                 graph.addPair(s.nextInt(), s.nextInt(), s.nextInt());
-            }
 
             querys = s.nextInt();
             for (int i = 0; i < querys; i++) {
@@ -93,6 +88,7 @@ public class p504 {
                 start = s.nextInt(); end = s.nextInt();
                 found = flag = false;
                 PriorityQueue<State> q = new PriorityQueue<>();
+                visited = new boolean[N + 1];
                 distance = new int[N + 1];
                 for (int j = 1; j <= N; j++) distance[j] = Integer.MAX_VALUE;
                 bestWeight = -1;
@@ -104,20 +100,26 @@ public class p504 {
                 while (!q.isEmpty()) {
 
                     current = q.poll();
+                    visited[current.node] = true;
+                    if (found && current.streets >= streets) continue;
 
-                    if (current.weight > distance[current.node]) continue;
                     if (current.node == end) {
-                        bestWeight = current.weight;
-                        found = true;
+                        if (bestWeight == -1) {
+                            bestWeight = current.weight;
+                            streets = current.streets;
+                            found = true;
+                        }
+                        else flag = true;
                     }
 
-                    for (Node node : graph.adyacentList.get(current.node)) {
-
+                    for (Edge node : graph.adyacentList.get(current.node)) {
+                        if (visited[node.to]) continue;
                         int weight = node.weight + current.weight;
-                        if (weight > distance[node.to]) continue;
-                        distance[node.to] = weight;
-                        q.add(new State(node.to, current.streets + 1, weight));
-
+                        if (weight < distance[current.node]) {
+                            distance[node.to] = weight;
+                        }
+                        if (!found || current.streets <= streets)
+                            q.add(new State(node.to, current.streets + 1, weight));
                     }
 
                 }
@@ -126,12 +128,13 @@ public class p504 {
                     System.out.println("SIN CAMINO");
                 }
                 else {
-                    System.out.println(bestWeight + " NO");
+                    System.out.println(bestWeight + ((!flag) ? " SI" : " NO"));
                 }
 
             }
 
-            System.out.println("---");
+            graph.clear(N);
+            System.out.println("----");
         }
 
     }
