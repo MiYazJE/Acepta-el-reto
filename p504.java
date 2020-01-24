@@ -14,6 +14,7 @@ class State implements Comparable<State> {
 
     @Override
     public int compareTo(State state) {
+        if (this.weight == state.weight) return this.streets - state.streets;
         return this.weight - state.weight;
     }
 }
@@ -29,6 +30,22 @@ class Edge {
         this.weight = weight;
     }
 
+}
+
+class Node implements Comparable<Node> {
+
+    int node;
+    int streets;
+
+    public Node(int node, int calles) {
+        this.node = node;
+        this.streets = calles;
+    }
+
+    @Override
+    public int compareTo(Node node) {
+        return this.streets - node.streets;
+    }
 }
 
 class Graph {
@@ -52,6 +69,53 @@ class Graph {
         this.adyacentList.get(B).addLast(new Edge(B, A, weight));
     }
 
+    public int bfs(int start, int dest, int N) {
+        boolean[] visited = new boolean[N + 1];
+        visited[start] = true;
+        PriorityQueue<Node> q = new PriorityQueue<>();
+        if (!this.adyacentList.get(start).isEmpty())
+            q.add(new Node(start, 0));
+        while (!q.isEmpty()) {
+            Node current = q.poll();
+            if (current.node == dest) return current.streets;
+            for (Edge node : this.adyacentList.get(current.node)) {
+                if (visited[node.to]) continue;
+                visited[node.to] = true;
+                q.add(new Node(node.to, current.streets + 1));
+            }
+        }
+        return -1;
+    }
+
+    public State dijkstra(int start, int end, int N) {
+
+        PriorityQueue<State> q = new PriorityQueue<>();
+        int[]distance = new int[N + 1];
+        for (int i = 1; i <= N; i++) distance[i] = Integer.MAX_VALUE;
+
+        q.add(new State(start, 0, 0));
+        distance[start] = 0;
+
+        while (!q.isEmpty()) {
+
+            State current = q.poll();
+
+            if (distance[current.node] > current.weight) continue;
+            if (current.node == end)
+                return new State(0, current.streets, current.weight);
+
+            for (Edge node : this.adyacentList.get(current.node)) {
+                int weight = node.weight + current.weight;
+                if (weight > distance[node.to]) continue;
+                distance[node.to] = weight;
+                q.add(new State(node.to, current.streets + 1, weight));
+            }
+
+        }
+
+        return null;
+    }
+
     public void clear(int to) {
         for (int i = 1; i <= to; i++) {
             this.adyacentList.get(i).clear();
@@ -67,12 +131,8 @@ public class p504 {
         final Scanner s = new Scanner(System.in);
 
         Graph graph = new Graph(20_001);
-        boolean found, flag;
-        boolean[] visited;
         int N, C;
-        int distance[];
-        int start, end, querys, bestWeight, streets;
-        State current;
+        int start, end, querys;
 
         while (s.hasNext()) {
 
@@ -86,51 +146,17 @@ public class p504 {
             for (int i = 0; i < querys; i++) {
 
                 start = s.nextInt(); end = s.nextInt();
-                found = flag = false;
-                PriorityQueue<State> q = new PriorityQueue<>();
-                visited = new boolean[N + 1];
-                distance = new int[N + 1];
-                for (int j = 1; j <= N; j++) distance[j] = Integer.MAX_VALUE;
-                bestWeight = -1;
-                streets = -1;
-
-                q.add(new State(start, 0, 0));
-                distance[start] = 0;
-
-                while (!q.isEmpty()) {
-
-                    current = q.poll();
-                    visited[current.node] = true;
-                    if (found && current.streets >= streets) continue;
-
-                    if (current.node == end) {
-                        if (bestWeight == -1) {
-                            bestWeight = current.weight;
-                            streets = current.streets;
-                            found = true;
-                        }
-                        else flag = true;
-                    }
-
-                    for (Edge node : graph.adyacentList.get(current.node)) {
-                        if (visited[node.to]) continue;
-                        int weight = node.weight + current.weight;
-                        if (weight < distance[current.node]) {
-                            distance[node.to] = weight;
-                        }
-                        if (!found || current.streets <= streets)
-                            q.add(new State(node.to, current.streets + 1, weight));
-                    }
-
-                }
-
-                if (!found) {
+                if (C == 0) {
                     System.out.println("SIN CAMINO");
-                }
-                else {
-                    System.out.println(bestWeight + ((!flag) ? " SI" : " NO"));
+                    continue;
                 }
 
+                int minStreets = graph.bfs(start, end, N);
+                if (minStreets == -1) System.out.println("SIN CAMINO");
+                else {
+                    State dijkstra = graph.dijkstra(start, end, N);
+                    System.out.println(dijkstra.weight + " " + ((minStreets == dijkstra.streets) ? "SI" : "NO"));
+                }
             }
 
             graph.clear(N);
