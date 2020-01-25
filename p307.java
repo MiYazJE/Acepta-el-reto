@@ -52,32 +52,6 @@ class Graph {
         return false;
     }
 
-    public boolean isCyclicDisconntected(int V) {
-
-        boolean[] visited = new boolean[V];
-
-        for (int i = 0; i < V; i++)
-            if (!visited[i] && isCyclicConntected(i, V, visited))
-                return true;
-
-        return false;
-    }
-
-    public void bfs(int i, boolean[] visited) {
-
-        Queue<Integer> q = new LinkedList<>();
-        q.add(i);
-
-        while (!q.isEmpty()) {
-            int u = q.poll();
-            visited[u] = true;
-            for (Integer c : this.adyacentList.get(u)) {
-                if (!visited[c]) q.add(c);
-            }
-        }
-
-    }
-
     public void clear(int to) {
         for (int i = 0; i < to; i++) {
             this.adyacentList.get(i).clear();
@@ -106,8 +80,7 @@ public class p307 {
                 graph.addPair(s.nextInt(), s.nextInt());
 
             visited = new boolean[N];
-            if (!graph.isCyclicDisconntected(N)) {
-                graph.bfs(0, visited);
+            if (!graph.isCyclicConntected(0, N, visited)) {
                 connected = true;
                 for (int i = 0; i < N && connected; i++)
                     connected = visited[i];
