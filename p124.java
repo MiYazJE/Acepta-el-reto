@@ -6,7 +6,7 @@ public class p124 {
 
         Scanner s = new Scanner(System.in);
 
-        String str1, str2;
+        String str1, str2; 
         int[] n1, n2;
 
         while (true) {
