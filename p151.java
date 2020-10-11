@@ -2,86 +2,33 @@ import java.util.Scanner;
 
 public class p151 {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		Scanner s = new Scanner(System.in);
+        Scanner s = new Scanner(System.in);
+        int F, num;
+        boolean valid;
 
-		int[][] matriz;
-		int n;
-		boolean identidad;
+        while (true) {
 
-		n = s.nextInt();
+            F = s.nextInt();
+            if (F == 0) break;
 
-		while(n != 0) {
+            valid = true;
+            for (int i = 0; i < F; i++) {
+                for (int j = 0; j < F; j++) {
+                    num = s.nextInt();
+                    if (Math.abs(i - j) == 0) {
+                        valid = valid && num == 1;
+                    }
+                    else {
+                        valid = valid && num == 0;
+                    }
+                }
+            }
 
-			matriz    = new int[n][n];
-			identidad = true;
+            System.out.println( valid ? "SI" : "NO" );
+        }
 
-			for(int i = 0; i < n; i++) {
-				for(int j = 0; j < n; j++) {
-
-					matriz[i][j] = s.nextInt();
-					
-				}
-			}
-
-			// comprobar diagonal de 1
-			for(int i = 0; i < n; i++) {
-				for(int j = 0; j < n; j++) {
-
-					if(matriz[i][i] != 1) {
-						identidad = false;
-						break;
-					}
-					
-				}
-			}
-
-			// comprobar lado izquierdo de 0
-			if( identidad ) {
-				for(int i = 0; i < n; i++) {
-					for(int j = 0; j < i; j++) {
-
-						if(matriz[i][j] != 0) {
-							identidad = false;
-							break;
-						}
-						
-					}
-				}
-
-			}
-
-			//comprobar lado derecho de 1
-			if( identidad ) {
-				for(int i = 0; i < n; i++) {
-					for(int j = n-1; j > i; j--) {
-
-						if(matriz[i][j] != 0) {
-							identidad = false;
-							break;
-						}
-						
-					}
-				}
-
-			}
-
-
-			if( identidad ) {
-				System.out.println("SI");
-			} else {
-				System.out.println("NO");
-			}
-
-
-
-			n = s.nextInt();
-		}
-
-
-
-		s.close();
-	}
+    }
 
 }
