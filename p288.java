@@ -1,180 +1,108 @@
 import java.util.*;
 
-/**
- * @author Rubén Saiz
- */
-
 public class p288 {
 
-    static int[] uf, sizes;
+    static int[] uf;
+    static int[] sizes;
+    static int maxSize;
 
-    static int union(int i, int j) {
-        if (isConnected(i, j)) return 0;
-        int root_i = root(i), root_j = root(j);
-        uf[root_i] = root_j;
-        sizes[root_j] += sizes[root_i];
-        return sizes[root_j];
+    static void union(int a, int b) {
+        int rootA = find(a);
+        int rootB = find(b);
+        if (rootA != rootB) {
+            int rankA = sizes[rootA];
+            int rankB = sizes[rootB];
+            if (rankA >= rankB) {
+                uf[rootB] = rootA;
+                sizes[rootA] += rankB;
+            }
+            else {
+                uf[rootA] = rootB;
+                sizes[rootB] += rankA;
+            }
+        }
+        maxSize = Math.max(maxSize, Math.max(sizes[rootB], sizes[rootA]));
     }
 
-    static int root(int i) {
-        while (i != uf[i]) i = uf[i];
-        return uf[i];
+    static int find(int n) {
+        if (n == uf[n]) return n;
+        uf[n] = find(uf[n]);
+        return uf[n];
     }
-
-    static boolean isConnected(int i, int j) {
-        return root(i) == root(j);
-    }
-    
 
     public static void main(String[] args) {
 
         final Scanner s = new Scanner(System.in);
 
-        int column, row, max, n;
-        String input;
-        StringBuilder str = new StringBuilder();
-        int[][] grid = new int[1001][1001];
+        boolean[][] m;
+        int F, C, c, index, y, x;
+        StringBuilder sequence = new StringBuilder();;
 
         while (s.hasNext()) {
 
-            row = s.nextInt();
-            column = s.nextInt(); s.nextLine();
+            F = s.nextInt();
+            C = s.nextInt();
+            s.nextLine();
 
-            for (int i = 1; i <= row; i++)
-                for (int j = 1; j <= column; j++)
-                    grid[i][j] = 0;
+            m = new boolean[F + 2][C + 2];
+            sizes = new int[F * C + 1];
+            uf = new int[F * C + 1];
 
-            uf     = new int[(row + 1) * (column + 1) + 4];
-            sizes = new int[(row + 1) * (column + 1) + 4];
+            for (int i = 1; i <= F * C; i++) {
+                uf[i] = i;
+                sizes[i] = 1;
+            }
 
-            for (int i = 1; i <= row; i++) {
-                input = s.nextLine();
-                for (int j = 0; j < input.length(); j++) {
-                    if (input.charAt(j) == '#') {
-                        grid[i][j + 1] = 1;
-                    }
+            for (int i = 1; i <= F; i++) {
+                String line = s.nextLine();
+                for (int j = 1; j <= line.length(); j++)
+                    m[i][j] = line.charAt(j - 1) == '#';
+            }
+
+            maxSize = 0;
+            for (int i = 1; i <= F; i++) {
+                for (int j = 1; j <= C; j++) {
+                    if (!m[i][j]) continue;
+                    maxSize = Math.max(maxSize, 1);
+                    index = ((i - 1) * C) + j;
+
+                    if (m[i + 1][j]) union(index, index + C); // top
+                    if (m[i - 1][j]) union(index, index - C); // bottom
+                    if (m[i][j - 1]) union(index, index - 1); // left
+                    if (m[i][j + 1]) union(index, index + 1); // right
+
+                    if (m[i + 1][j - 1]) union(index, index + C - 1); // corner bottom left
+                    if (m[i + 1][j + 1]) union(index, index + C + 1); // corner bottom right
+                    if (m[i - 1][j - 1]) union(index, index - C - 1); // corner top left
+                    if (m[i - 1][j + 1]) union(index, index - C + 1); // corner top right
                 }
             }
 
-            for (int i = 1; i <= row; i++) {
-                for (int j = 1; j <= column; j++) {
-                    if (grid[i][j] == 1) {
-                        int index = i * column + j;
-                        uf[index] = index;
-                        sizes[index] = 1;
-                    }
-                }
+            sequence.append(maxSize);
+
+            c = s.nextInt();
+            while (c-- != 0) {
+                y = s.nextInt();
+                x = s.nextInt();
+                maxSize = Math.max(maxSize, 1);
+                m[y][x] = true;
+                index = ((y - 1) * C ) + x;
+
+                if (m[y + 1][x]) union(index, index + C); // top
+                if (m[y - 1][x]) union(index, index - C); // bottom
+                if (m[y][x - 1]) union(index, index - 1); // left
+                if (m[y][x + 1]) union(index, index + 1); // right
+
+                if (m[y + 1][x - 1]) union(index, index + C - 1); // corner bottom left
+                if (m[y + 1][x + 1]) union(index, index + C + 1); // corner bottom right
+                if (m[y - 1][x - 1]) union(index, index - C - 1); // corner top left
+                if (m[y - 1][x + 1]) union(index, index - C + 1); // corner top right
+
+                sequence.append(" ").append(maxSize);
             }
 
-            max = 0; //CAMBIO
-            for (int i = 1; i <= row; i++) {
-                for (int j = 1; j <= column; j++) {
-                    if (grid[i][j] == 1) {
-                        max = Math.max(max, 1);
-                        if (i > 1) {
-                            if (grid[i - 1][j] == 1) {
-                                max = Math.max(max, union(i * column + j, (i - 1) * column + j));
-                            }
-                        }
-                        if (i < row) {
-                            if (grid[i + 1][j] == 1) {
-                                max = Math.max(max, union(i * column + j, (i + 1) * column + j));
-                            }
-                        }
-                        if (j > 1) {
-                            if (grid[i][j - 1] == 1) {
-                                max = Math.max(max, union(i * column + j, i * column + (j - 1)));
-                            }
-                        }
-                        if (j < column) {
-                            if (grid[i][j + 1] == 1) {
-                                max = Math.max(max, union(i * column + j, i * column + (j + 1)));
-                            }
-                        }
-                        if (i < row && j < column) {
-                            if (grid[i + 1][j + 1] == 1) {
-                                max = Math.max(max, union(i * column + j, (i + 1) * column + (j + 1)));
-                            }
-                        }
-                        if (i > 1 && j > 1) {
-                            if (grid[i - 1][j - 1] == 1) {
-                                max = Math.max(max, union(i * column + j, (i - 1) * column + (j - 1)));
-                            }
-                        }
-                        if (i < row && j > 1) {
-                            if (grid[i + 1][j - 1] == 1) {
-                                max = Math.max(max, union(i * column + j, (i + 1) * column + (j - 1)));
-                            }
-                        }
-                        if (i > 1 && j < column) {
-                            if (grid[i - 1][j + 1] == 1) {
-                                max = Math.max(max, union(i * column + j, (i - 1) * column + (j + 1)));
-                            }
-                        }
-                    }
-                }
-            }
-
-            str.append( max );
-
-            n = s.nextInt();
-            for (int k = 0; k < n; k++) {
-
-                int i = s.nextInt();
-                int j = s.nextInt();
-
-                int index = i * column + j;
-                uf[index] = index;
-                sizes[index] = 1;
-                grid[i][j] = 1;
-
-                max = Math.max(max, 1);
-                if (i > 1) {
-                    if (grid[i - 1][j] == 1) {
-                        max = Math.max(max, union(i * column + j, (i - 1) * column + j));
-                    }
-                }
-                if (i < row) {
-                    if (grid[i + 1][j] == 1) {
-                        max = Math.max(max, union(i * column + j, (i + 1) * column + j));
-                    }
-                }
-                if (j > 1) {
-                    if (grid[i][j - 1] == 1) {
-                        max = Math.max(max, union(i * column + j, i * column + (j - 1)));
-                    }
-                }
-                if (j < column) {
-                    if (grid[i][j + 1] == 1) {
-                        max = Math.max(max, union(i * column + j, i * column + (j + 1)));
-                    }
-                }
-                if (i < row && j < column) {
-                    if (grid[i + 1][j + 1] == 1) {
-                        max = Math.max(max, union(i * column + j, (i + 1) * column + (j + 1)));
-                    }
-                }
-                if (i > 1 && j > 1) {
-                    if (grid[i - 1][j - 1] == 1) {
-                        max = Math.max(max, union(i * column + j, (i - 1) * column + (j - 1)));
-                    }
-                }
-                if (i < row && j > 1) {
-                    if (grid[i + 1][j - 1] == 1) {
-                        max = Math.max(max, union(i * column + j, (i + 1) * column + (j - 1)));
-                    }
-                }
-                if (i > 1 && j < column) {
-                    if (grid[i - 1][j + 1] == 1) {
-                        max = Math.max(max, union(i * column + j, (i - 1) * column + (j + 1)));
-                    }
-                }
-
-                str.append(" ").append( max );
-            }
-
-            System.out.println( str.toString() );
-            str.delete(0, str.length());
+            System.out.println(sequence.toString());
+            sequence.delete(0, sequence.length());
         }
 
     }
