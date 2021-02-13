@@ -22,7 +22,7 @@ public class p589 {
                 else ans += max - num;
             }
             System.out.println(ans);
-        }
+        } 
 
     }
 
