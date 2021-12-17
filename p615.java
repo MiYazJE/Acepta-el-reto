@@ -12,5 +12,5 @@ public class p615 {
             System.out.println((f % (n + 1)) * t);
         }
     }
-
+ 
 }
