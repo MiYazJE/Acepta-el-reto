@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class p677 {
+public class p667 {
 
     static int countRepeated(String str, String c) {
         int times = 0;
