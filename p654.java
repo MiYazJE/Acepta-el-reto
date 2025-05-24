@@ -47,22 +47,6 @@ public class p654 {
   static char[][] m;
   static boolean[][] visited;
 
-  static void dfs(Posit posit, int f, int c) {
-    if (f < 0 || f == m.length || c < 0 || c == m[f].length) {
-      return;
-    }
-
-    if (visited[f][c] || m[f][c] != posit.id) return;
-
-    visited[f][c] = true;
-    posit.updateCords(f, c);
-
-    dfs(posit, f + 1, c);
-    dfs(posit, f - 1, c);
-    dfs(posit, f, c + 1);
-    dfs(posit, f, c - 1);
-  }
-
   public static void main(String[] args) {
     
     Scanner s = new Scanner(System.in);
@@ -90,11 +74,8 @@ public class p654 {
           if (id == '.' || visited[i][j]) continue;
 
           Posit posit = posits.containsKey(id) ? posits.get(id) : new Posit(id);
-          try {
-            dfs(posit, i, j);
-            posits.put(id, posit);
-          } catch (StackOverflowError e) {
-          }
+          posit.updateCords(i, j);
+          posits.put(id, posit);
         }
       }
 
